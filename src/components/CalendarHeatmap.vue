@@ -1,40 +1,48 @@
 <template>
-	<div :class="{'vch__container': true, 'dark-mode': darkMode}">
+	<div 
+        :class="{'vch__container': true, 'dark-mode': darkMode, 'no-interact' : noInteract}"
+    >
 		<svg class="vch__wrapper" ref="svg" :viewBox="viewbox">
+
+            <!-- MONTHS -->
 			<g class="vch__months__labels__wrapper" :transform="monthsLabelWrapperTransform">
-				<text
-					class="vch__month__label"
-					v-for="(month, index) in heatmap.firstFullWeekOfMonths"
-					:key="index"
-					:x="getMonthLabelPosition(month).x"
-					:y="getMonthLabelPosition(month).y"
-				>
-					{{ lo.months[ month.value ] }}
-				</text>
+                <!-- Months that appear on the left side of the calendar -->
+                <text
+                    class="vch__month__label"
+                    v-for="(month, index) in heatmap.firstFullWeekOfMonths"
+                    :key="index"
+                    :x="getMonthLabelPosition(month).x"
+                    :y="getMonthLabelPosition(month).y"
+                >
+                    {{ lo.months[ month.value ] }}
+                </text>
 			</g>
 
+            <!-- DAYS -->
 			<g class="vch__days__labels__wrapper" :transform="daysLabelWrapperTransform">
-				<text class="vch__day__label"
-					  :x="vertical ? SQUARE_SIZE : 0"
-					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 20"
-				>
-					{{ lo.days[ 1 ] }}
-				</text>
-				<text class="vch__day__label"
-					  :x="vertical ? SQUARE_SIZE * 3 : 0"
-					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 44"
-				>
-					{{ lo.days[ 3 ] }}
-				</text>
-				<text class="vch__day__label"
-					  :x="vertical ? SQUARE_SIZE * 5 : 0"
-					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 69"
-				>
-					{{ lo.days[ 5 ] }}
-				</text>
+                <!-- Days that appear on the left side of the calendar -->
+                <template
+                    v-for="i in Array(7).keys()"
+                    :key="i"
+                >
+                    <text
+                        class="vch__day__label"
+                        :x="vertical ? SQUARE_SIZE * i : 0"
+                        :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : (8+i*SQUARE_SIZE)"
+                    >
+                        <slot
+                            :name="'day-' + i"
+                        >
+                            <template v-if="[1, 3, 5].includes(i)">
+                                {{ lo.days[i] }}
+                            </template>
+                        </slot>
+                    </text>
+                </template>
 			</g>
 
-			<g v-if="vertical" class="vch__legend__wrapper" :transform="legendWrapperTransform">
+            <!-- VERTICAL CALENDAR -->
+            <g v-if="vertical" class="vch__legend__wrapper" :transform="legendWrapperTransform">
 				<text :x="SQUARE_SIZE * 1.25" y="8">{{ lo.less }}</text>
 				<rect
 					v-for="(color, index) in curRangeColor"
@@ -55,6 +63,7 @@
 				</text>
 			</g>
 
+            <!-- MAIN CALENDAR -->
 			<g class="vch__year__wrapper" :transform="yearWrapperTransform">
 				<g class="vch__month__wrapper"
 				   v-for="(week, weekIndex) in heatmap.calendar"
@@ -71,46 +80,51 @@
 							  :height="SQUARE_SIZE - SQUARE_BORDER_SIZE"
 							  :style="{ fill: curRangeColor[day.colorIndex] }"
 							  :data-tippy-content="tooltipOptions(day)"
-							  @click="$emit('dayClick', day)"
+							  @click="emitEvent(day)"
 						/>
 					</template>
 				</g>
 			</g>
 		</svg>
-		<div class="vch__legend">
-			<slot name="legend">
-				<div class="vch__legend-left">
-					<slot name="vch__legend-left"></slot>
-				</div>
-				<div class="vch__legend-right">
-					<slot name="legend-right">
-						<div class="vch__legend">
-							<div>{{ lo.less }}</div>
-							<svg v-if="!vertical" class="vch__external-legend-wrapper" :viewBox="legendViewbox" :height="SQUARE_SIZE - SQUARE_BORDER_SIZE">
-								<g class="vch__legend__wrapper">
-									<rect
-										v-for="(color, index) in curRangeColor"
-										:key="index"
-										:rx="round"
-										:ry="round"
-										:style="{ fill: color }"
-										:width="SQUARE_SIZE - SQUARE_BORDER_SIZE"
-										:height="SQUARE_SIZE - SQUARE_BORDER_SIZE"
-										:x="SQUARE_SIZE * index"
-									/>
-								</g>
-							</svg>
-							<div>{{ lo.more }}</div>
-						</div>
-					</slot>
-				</div>
-			</slot>
+
+        <!-- LEGEND -->
+		<div 
+            v-if="!vertical"
+            :class="`vch__legend legend-${(legendDirectionReverse ? (vertical ? 'bottom' : 'left' ) : (vertical ? 'top': 'right'))}`"
+        >
+                <div 
+                    class="vch__legend"
+                >
+                    <slot name="legend-text-less">
+                        <div>{{ lo.less }}</div>
+                    </slot>
+                    <slot name="legend-range">
+                    <svg v-if="!vertical" class="vch__external-legend-wrapper" :viewBox="legendViewbox" :height="SQUARE_SIZE - SQUARE_BORDER_SIZE">
+                        <g class="vch__legend__wrapper">
+                            <rect
+                                v-for="(color, index) in curRangeColor"
+                                :key="index"
+                                :rx="round"
+                                :ry="round"
+                                :style="{ fill: color }"
+                                :width="SQUARE_SIZE - SQUARE_BORDER_SIZE"
+                                :height="SQUARE_SIZE - SQUARE_BORDER_SIZE"
+                                :x="SQUARE_SIZE * index"
+                            />
+                        </g>
+                    </svg>
+                    </slot>
+                    <slot name="legend-text-more">
+                        <div>{{ lo.more }}</div>
+                    </slot>
+                </div>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
-	import { defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, toRef, toRefs, watch } from 'vue';
+	import { defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, toRef, toRefs, watch, computed } from 'vue';
+    // @ts-ignore
 	import { CalendarItem, Heatmap, Locale, Month, TooltipFormatter, Value } from '@/components/Heatmap';
 	import tippy, { createSingleton, CreateSingletonInstance, Instance } from 'tippy.js';
 	import 'tippy.js/dist/tippy.css';
@@ -119,15 +133,20 @@
 	export default /*#__PURE__*/defineComponent({
 		name : 'CalendarHeatmap',
 		props: {
+            // Calendar end date
 			endDate         : {
-				required: true
+                type: Date,
+				// required: true,
+                default: new Date(),
 			},
+            // DUNNO
 			max             : {
 				type: Number
 			},
 			rangeColor      : {
 				type: Array as PropType<string[]>
 			},
+            // Main values
 			values          : {
 				type    : Array as PropType<Value[]>,
 				required: true
@@ -135,6 +154,7 @@
 			locale          : {
 				type: Object as PropType<Partial<Locale>>
 			},
+            // Show tooltip
 			tooltip         : {
 				type   : Boolean,
 				default: true
@@ -146,22 +166,43 @@
 			tooltipFormatter: {
 				type: Function as PropType<TooltipFormatter>
 			},
+            // Calendar orientation
 			vertical        : {
 				type   : Boolean,
 				default: false
 			},
+            // Tooltip text on date with no data
 			noDataText      : {
 				type   : [ Boolean, String ],
 				default: null
 			},
+            // Show no tooltip for empty dates
+            noDataTooltip: {
+                type: Boolean,
+                default: false,
+            },
+            // Rounded corner for each date
 			round           : {
 				type   : Number,
-				default: 0
+				default: 0,
+                validator: (val: Number) => {
+                    return (val >= 0 && val <= 5)
+                },
 			},
-			darkMode        : Boolean
+			darkMode        : Boolean,
+            // default is right if horizontal, top if vertical
+            legendDirectionReverse: {
+                type: Boolean,
+                default: false,
+            },
+            // No hover effect, no tooltip, no click event emit
+            noInteract: {
+                type: Boolean,
+                default: false,
+            }
 		},
 		emits: [ 'dayClick' ],
-		setup(props) {
+		setup(props, { emit, slots}) {
 
 			const SQUARE_BORDER_SIZE          = Heatmap.SQUARE_SIZE / 5,
 				  SQUARE_SIZE                 = Heatmap.SQUARE_SIZE + SQUARE_BORDER_SIZE,
@@ -174,6 +215,7 @@
 				  svg                         = ref<null | SVGElement>(null),
 				  now                         = ref(new Date()),
 				  heatmap                     = ref(new Heatmap(props.endDate as Date, props.values, props.max)),
+                  dayPositions                = ref([8, 20, 32, 44, 56, 68, 80]),
 
 				  width                       = ref(0),
 				  height                      = ref(0),
@@ -185,12 +227,13 @@
 				  lo                          = ref<Locale>({} as any),
 				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT));
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale } = toRefs(props);
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, legendDirectionReverse } = toRefs(props);
+
 
 			let tippyInstances: Instance[],
 				tippySingleton: CreateSingletonInstance;
 
-			function initTippy() {
+			const initTippy = () => {
 				tippyInstances = tippy(Array.from(svg.value!.querySelectorAll('.vch__day__square[data-tippy-content]')));
 				if (tippySingleton) {
 					tippySingleton.setInstances(tippyInstances);
@@ -202,37 +245,49 @@
 				}
 			}
 
-			function tooltipOptions(day: CalendarItem) {
-				if (props.tooltip) {
+			const tooltipOptions = (day: CalendarItem) => {
+				if (props.tooltip && !props.noInteract) {
+                    // slots like: 'tooltip-2022-3-3'
+                    const tooltipForDate = `tooltip-${day.date.getFullYear()}-${day.date.getUTCMonth() + 1}-${day.date.getUTCDate()}`
+                    if (slots[tooltipForDate]) {
+                        console.log(slots[tooltipForDate]?.()[0])
+                        return slots[tooltipForDate]?.()[0].children
+                    }
 					if (day.count !== undefined) {
 						if (props.tooltipFormatter) {
 							return props.tooltipFormatter(day, props.tooltipUnit);
 						}
+                        if (slots['tooltip-active']) {
+                            return slots['tooltip-active']()[0].children
+                        }
 						return `<b>${day.count} ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[ day.date.getMonth() ]} ${day.date.getDate()}, ${day.date.getFullYear()}`;
 					} else if (props.noDataText) {
 						return `${props.noDataText}`;
 					} else if (props.noDataText !== false) {
+                        if (slots['tooltip-inactive']) {
+                            return slots['tooltip-inactive']()[0].children
+                        }
 						return `<b>No ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[ day.date.getMonth() ]} ${day.date.getDate()}, ${day.date.getFullYear()}`;
 					}
 				}
 				return undefined;
 			}
 
-			function getWeekPosition(index: number) {
+			const getWeekPosition = (index: number) => {
 				if (props.vertical) {
 					return `translate(0, ${(SQUARE_SIZE * heatmap.value.weekCount) - ((index + 1) * SQUARE_SIZE)})`;
 				}
 				return `translate(${index * SQUARE_SIZE}, 0)`;
 			}
 
-			function getDayPosition(index: number) {
+			const getDayPosition = (index: number) => {
 				if (props.vertical) {
 					return `translate(${index * SQUARE_SIZE}, 0)`;
 				}
 				return `translate(0, ${index * SQUARE_SIZE})`;
 			}
 
-			function getMonthLabelPosition(month: Month) {
+			const getMonthLabelPosition = (month: Month) => {
 				if (props.vertical) {
 					return { x: 3, y: (SQUARE_SIZE * heatmap.value.weekCount) - (SQUARE_SIZE * (month.index)) - (SQUARE_SIZE / 4) };
 				}
@@ -276,17 +331,25 @@
 				}
 			);
 
-			onMounted(initTippy);
+			onMounted(() => {
+                initTippy()
+            });
+             
 			onBeforeUnmount(() => {
 				tippySingleton?.destroy();
 				tippyInstances?.map(i => i.destroy());
 			});
 
+            const emitEvent = (day: String | Date) => {
+                if (!toRef(props, 'noInteract'))
+                    emit('dayClick', day)
+            }
+
 			return {
 				SQUARE_BORDER_SIZE, SQUARE_SIZE, LEFT_SECTION_WIDTH, RIGHT_SECTION_WIDTH, TOP_SECTION_HEIGHT, BOTTOM_SECTION_HEIGHT,
-				svg, heatmap, now, width, height, viewbox, daysLabelWrapperTransform, monthsLabelWrapperTransform, yearWrapperTransform, legendWrapperTransform,
-				lo, legendViewbox, curRangeColor: rangeColor,
-				tooltipOptions, getWeekPosition, getDayPosition, getMonthLabelPosition
+				svg, heatmap, dayPositions, now, width, height, viewbox, daysLabelWrapperTransform, monthsLabelWrapperTransform, yearWrapperTransform, legendWrapperTransform,
+				lo, legendViewbox, curRangeColor: rangeColor, legendDirectionReverse, 
+				tooltipOptions, getWeekPosition, getDayPosition, getMonthLabelPosition, emitEvent, 
 			};
 		}
 	});
@@ -294,11 +357,23 @@
 
 <style lang="scss">
 
+    .no-interact {
+        Text-Decoration: None !important; 
+        pointer-events: none;
+    } 
+
 	.vch__container {
 		.vch__legend {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+
+            &.legend-left {
+                flex-direction: row;
+            }
+            &.legend-right {
+                flex-direction: row-reverse;
+            }
 		}
 
 		.vch__external-legend-wrapper {

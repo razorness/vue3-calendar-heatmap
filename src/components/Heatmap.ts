@@ -125,7 +125,7 @@ export class Heatmap {
 		if (!this._firstFullWeekOfMonths) {
 			const cal                   = this.calendar;
 			this._firstFullWeekOfMonths = [];
-			for (let index = 1, len = cal.length; index < len; index++) {
+			for (let index = 1, len = cal.length; index < len-1; index++) {
 				const lastWeek    = cal[ index - 1 ][ 0 ].date,
 					  currentWeek = cal[ index ][ 0 ].date;
 				if (lastWeek.getFullYear() < currentWeek.getFullYear() || lastWeek.getMonth() < currentWeek.getMonth()) {
