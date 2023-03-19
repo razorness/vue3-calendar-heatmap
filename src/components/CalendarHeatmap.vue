@@ -204,6 +204,7 @@
 			}
 
 			function tooltipOptions(day: CalendarItem) {
+				// Always return tooltip text, then users could use their own code to fine tune tooltips
 				if (day.count !== undefined) {
 					if (props.tooltipFormatter) {
 						return props.tooltipFormatter(day, props.tooltipUnit!);
