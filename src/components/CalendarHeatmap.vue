@@ -204,19 +204,16 @@
 			}
 
 			function tooltipOptions(day: CalendarItem) {
-				if (props.tooltip) {
-					if (day.count !== undefined) {
-						if (props.tooltipFormatter) {
-							return props.tooltipFormatter(day, props.tooltipUnit!);
-						}
-						return `<b>${day.count} ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[ day.date.getMonth() ]} ${day.date.getDate()}, ${day.date.getFullYear()}`;
-					} else if (props.noDataText) {
-						return `${props.noDataText}`;
-					} else if (props.noDataText !== false) {
-						return `<b>No ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[ day.date.getMonth() ]} ${day.date.getDate()}, ${day.date.getFullYear()}`;
+				if (day.count !== undefined) {
+					if (props.tooltipFormatter) {
+						return props.tooltipFormatter(day, props.tooltipUnit!);
 					}
+					return `<b>${day.count} ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[ day.date.getMonth() ]} ${day.date.getDate()}, ${day.date.getFullYear()}`;
+				} else if (props.noDataText) {
+					return `${props.noDataText}`;
+				} else if (props.noDataText !== false) {
+					return `<b>No ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[ day.date.getMonth() ]} ${day.date.getDate()}, ${day.date.getFullYear()}`;
 				}
-				return undefined;
 			}
 
 			function getWeekPosition(index: number) {
