@@ -49,6 +49,12 @@
 
 		}" :vertical="orientation === 'vertical'"/>
 		<br>
+		<h4>Dark mode</h4>
+		<calendar-heatmap :values="values" :end-date="endDate" dark-mode :style="{'max-width': orientation === 'vertical' ? '145px' :  '675px'}"/>
+		<br>
+		<h4>Label Color</h4>
+		<calendar-heatmap :values="values" :end-date="endDate" :label-color="labelColor" :style="{'max-width': orientation === 'vertical' ? '145px' :  '675px'}"/>
+		<br>
 		<h4>Tooltip Unit</h4>
 		<calendar-heatmap :values="values" :end-date="endDate" :style="{'max-width': orientation === 'vertical' ? '145px' :  '675px'}" :tooltip-unit="picked"
 						  :vertical="orientation === 'vertical'"/>
@@ -83,7 +89,8 @@
 				values     : data,
 				endDate    : new Date('2021-08-01'),
 				picked     : 'Dings',
-				orientation: 'horizontal'
+				orientation: 'horizontal',
+				labelColor : '#FFD6F1'
 			};
 		}
 	});
