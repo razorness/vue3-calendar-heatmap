@@ -1,0 +1,1 @@
+import{_ as e,p as a,q as r,Q as t,t as s}from"./framework-c7fc5b18.js";const n={},c=t("h1",{id:"getting-started",tabindex:"-1"},[t("a",{class:"header-anchor",href:"#getting-started","aria-hidden":"true"},"#"),s(" getting started")],-1),d=[c];function o(i,_){return a(),r("div",null,d)}const h=e(n,[["render",o],["__file","getting-started.html.vue"]]);export{h as default};

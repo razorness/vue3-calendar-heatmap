@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="generator" content="VuePress 2.0.0-beta.61">
+    <style>
+      :root {
+        --c-bg: #fff;
+      }
+      html.dark {
+        --c-bg: #22272e;
+      }
+      html, body {
+        background-color: var(--c-bg);
+      }
+    </style>
+    <script>
+      const userMode = localStorage.getItem('vuepress-color-scheme');
+			const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (userMode === 'dark' || (userMode !== 'light' && systemDarkMode)) {
+				document.documentElement.classList.toggle('dark', true);
+			}
+    </script>
+    <title>getting started | Calendar Heatmap</title><meta name="description" content="Simple Heatmap Component for Vue 3">
+    <link rel="preload" href="/vue3-calendar-heatmap/assets/style-0b1ef79c.css" as="style"><link rel="stylesheet" href="/vue3-calendar-heatmap/assets/style-0b1ef79c.css">
+    <link rel="modulepreload" href="/vue3-calendar-heatmap/assets/app-f2931f06.js"><link rel="modulepreload" href="/vue3-calendar-heatmap/assets/framework-c7fc5b18.js"><link rel="modulepreload" href="/vue3-calendar-heatmap/assets/getting-started.html-9fb15079.js"><link rel="modulepreload" href="/vue3-calendar-heatmap/assets/getting-started.html-0b642d30.js"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/index.html-764f9570.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/index.html-de86f1c8.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/404.html-60b35caa.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/index.html-14aa62ab.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/index.html-29f2ee35.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/404.html-e26666d7.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/Demo-35972fbc.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/Links-72bfe5c1.js" as="script"><link rel="prefetch" href="/vue3-calendar-heatmap/assets/CalendarHeatmap-7f18aba8.js" as="script">
+  </head>
+  <body>
+    <div id="app"><!--[--><div class="theme-container no-sidebar"><!--[--><header class="navbar"><div class="toggle-sidebar-button" title="toggle sidebar" aria-expanded="false" role="button" tabindex="0"><div class="icon" aria-hidden="true"><span></span><span></span><span></span></div></div><span><a href="/vue3-calendar-heatmap/" class=""><img class="logo" src="https://vuejs.org/images/logo.png" alt="Calendar Heatmap"><span class="site-name can-hide">Calendar Heatmap</span></a></span><div class="navbar-items-wrapper" style=""><!--[--><!--]--><nav class="navbar-items can-hide"><!--[--><div class="navbar-item"><a class="external-link" href="https://github.com/razorness/vue3-calendar-heatmap" rel="noopener noreferrer" target="_blank" aria-label="GitHub"><!--[--><!--]--> GitHub <span><svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg><span class="external-link-icon-sr-only">open in new window</span></span><!--[--><!--]--></a></div><!--]--></nav><!--[--><!--]--><!----><!----></div></header><!--]--><div class="sidebar-mask"></div><!--[--><aside class="sidebar"><nav class="navbar-items"><!--[--><div class="navbar-item"><a class="external-link" href="https://github.com/razorness/vue3-calendar-heatmap" rel="noopener noreferrer" target="_blank" aria-label="GitHub"><!--[--><!--]--> GitHub <span><svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg><span class="external-link-icon-sr-only">open in new window</span></span><!--[--><!--]--></a></div><!--]--></nav><!--[--><!--]--><!----><!--[--><!--]--></aside><!--]--><!--[--><main class="page"><!--[--><!--]--><div class="theme-default-content"><!--[--><!--]--><div><h1 id="getting-started" tabindex="-1"><a class="header-anchor" href="#getting-started" aria-hidden="true">#</a> getting started</h1></div><!--[--><!--]--></div><footer class="page-meta"><div class="meta-item edit-link"><a class="external-link meta-item-label" href="https://github.com/razorness/vue3-calendar-heatmap/edit/main/docs/guide/getting-started.md" rel="noopener noreferrer" target="_blank" aria-label="Edit this page on GitHub"><!--[--><!--]--> Edit this page on GitHub <span><svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg><span class="external-link-icon-sr-only">open in new window</span></span><!--[--><!--]--></a></div><div class="meta-item last-updated"><span class="meta-item-label">Last Updated: </span><!----></div><div class="meta-item contributors"><span class="meta-item-label">Contributors: </span><span class="meta-item-info"><!--[--><!--[--><span class="contributor" title="email: nauruhn@cynatix.com">Volker Nauruhn</span><!----><!--]--><!--]--></span></div></footer><!----><!--[--><!--]--></main><!--]--></div><!----><!--]--></div>
+    <script type="module" src="/vue3-calendar-heatmap/assets/app-f2931f06.js" defer></script>
+  </body>
+</html>
