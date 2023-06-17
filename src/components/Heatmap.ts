@@ -54,19 +54,22 @@ export class Heatmap {
 	static readonly DAYS_IN_ONE_YEAR       = 365;
 	static readonly DAYS_IN_WEEK           = 7;
 	static readonly SQUARE_SIZE            = 10;
+	static readonly DEFAULT_LABEL_COLOR    = "#767676";
 
 	startDate: Date;
 	endDate: Date;
 	max: number;
+	labelColor: String;
 
 	private _values: Value[];
 	private _firstFullWeekOfMonths?: Month[];
 	private _activities?: Activities;
 	private _calendar?: Calendar;
 
-	constructor(endDate: Date | string, values: Value[], max?: number) {
+	constructor(endDate: Date | string, values: Value[], max?: number, labelColor?: String) {
 		this.endDate   = this.parseDate(endDate);
 		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / 5) * 4);
+		this.labelColor = labelColor || Heatmap.DEFAULT_LABEL_COLOR;
 		this.startDate = this.shiftDate(endDate, -Heatmap.DAYS_IN_ONE_YEAR);
 		this._values   = values;
 	}

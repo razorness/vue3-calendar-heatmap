@@ -11,6 +11,7 @@
 			:vertical="orientation === 'vertical'"
 			:dark-mode="isDarkMode"
 			:range-color="rangeColor"
+			:label-color="labelColor"
 		/>
 	</div>
 </template>
@@ -31,15 +32,17 @@
 			darkMode    : Boolean,
 			rangeColor  : {
 				type: Array as PropType<string[]>
-			}
+			},
+			labelColor  : String
 		},
 		setup(props) {
 
 			const round      = ref(props.initialRound !== undefined ? props.initialRound : 2),
-				  isDarkMode = props.darkMode ? toRef(props, 'darkMode') : false;
+				  isDarkMode = props.darkMode ? toRef(props, 'darkMode') : false,
+				  labelColor = props.labelColor;
 
 			return {
-				data, round, isDarkMode,
+				data, round, isDarkMode, labelColor,
 				endDate: new Date('2021-08-01')
 			};
 		}

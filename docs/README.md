@@ -172,6 +172,19 @@ export default {
 <calendar-heatmap :no-data-text="no data for this day" .../>
 ```
 
+### labelColor 
+- Type: `string`
+- Details:
+
+  String to select the color of the months and day of the week labels, set to the #767676 gray by default.
+
+```html:no-line-numbers
+<calendar-heatmap :label-color="#FFD6F1" .../>
+```
+
+#### Example
+<Demo label-color="#FFD6F1"/>
+
 ### tooltip
 
 - Type: `boolean`

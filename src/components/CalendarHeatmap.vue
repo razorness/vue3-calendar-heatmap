@@ -3,7 +3,7 @@
 		<svg class="vch__wrapper" ref="svg" :viewBox="viewbox">
 			<g class="vch__months__labels__wrapper" :transform="monthsLabelWrapperTransform">
 				<text
-					class="vch__month__label"
+					class="vch__month__label" :style="{ fill: labelColor }"
 					v-for="(month, index) in heatmap.firstFullWeekOfMonths"
 					:key="index"
 					:x="getMonthLabelPosition(month).x"
@@ -14,19 +14,19 @@
 			</g>
 
 			<g class="vch__days__labels__wrapper" :transform="daysLabelWrapperTransform">
-				<text class="vch__day__label"
+				<text class="vch__day__label" :style="{ fill: labelColor }"
 					  :x="vertical ? SQUARE_SIZE : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 20"
 				>
 					{{ lo.days[ 1 ] }}
 				</text>
-				<text class="vch__day__label"
+				<text class="vch__day__label" :style="{ fill: labelColor }"
 					  :x="vertical ? SQUARE_SIZE * 3 : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 44"
 				>
 					{{ lo.days[ 3 ] }}
 				</text>
-				<text class="vch__day__label"
+				<text class="vch__day__label" :style="{ fill: labelColor }"
 					  :x="vertical ? SQUARE_SIZE * 5 : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 69"
 				>
@@ -159,7 +159,10 @@
 				type   : Number,
 				default: 0
 			},
-			darkMode        : Boolean
+			darkMode        : Boolean,
+			labelColor: {
+				type: String
+			}
 		},
 		emits: [ 'dayClick' ],
 		setup(props) {
@@ -174,7 +177,7 @@
 
 				  svg                         = ref<null | SVGElement>(null),
 				  now                         = ref(new Date()),
-				  heatmap                     = ref(new Heatmap(props.endDate as Date, props.values, props.max)),
+				  heatmap                     = ref(new Heatmap(props.endDate as Date, props.values, props.max, props.labelColor)),
 
 				  width                       = ref(0),
 				  height                      = ref(0),
@@ -186,7 +189,7 @@
 				  lo                          = ref<Locale>({} as any),
 				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT));
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale } = toRefs(props),
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, labelColor } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
 
 			let tippySingleton: CreateSingletonInstance;
@@ -271,9 +274,9 @@
 			watch(rangeColor, rc => (legendViewbox.value = `0 0 ${Heatmap.SQUARE_SIZE * (rc.length + 1)} ${Heatmap.SQUARE_SIZE}`), { immediate: true });
 
 			watch(
-				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor ],
+				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor, labelColor ],
 				() => {
-					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max);
+					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max, props.labelColor);
 					tippyInstances.forEach((item) => item.destroy());
 					nextTick(initTippy);
 				}
