@@ -101,7 +101,7 @@
 									/>
 								</g>
 							</svg>
-							<div>{{ lo.more }}</div>
+							<div>{{ lo.more }} ({{ heatmap.max }})</div>
 						</div>
 					</slot>
 				</div>

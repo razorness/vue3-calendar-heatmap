@@ -67,14 +67,14 @@ export class Heatmap {
 
 	constructor(endDate: Date | string, values: Value[], max?: number, colorRange: string[] = Heatmap.DEFAULT_RANGE_COLOR_LIGHT) {
 		this.endDate   = this.parseDate(endDate);
-		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / 5) * 4);
+		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / 10) * 9);
         this.colorRange = colorRange;
 		this.startDate = this.shiftDate(endDate, -Heatmap.DAYS_IN_ONE_YEAR);
 		this._values   = values;
 	}
 
 	set values(v: Value[]) {
-		this.max                    = Math.ceil((Math.max(...v.map(day => day.count)) / 5) * 4);
+		this.max                    = Math.ceil((Math.max(...v.map(day => day.count)) / 10) * 9);
 		this._values                = v;
 		this._firstFullWeekOfMonths = undefined;
 		this._calendar              = undefined;
