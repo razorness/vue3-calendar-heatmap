@@ -58,21 +58,26 @@ export class Heatmap {
 	startDate: Date;
 	endDate: Date;
 	max: number;
+    colorRange: string[];
 
 	private _values: Value[];
 	private _firstFullWeekOfMonths?: Month[];
 	private _activities?: Activities;
 	private _calendar?: Calendar;
 
-	constructor(endDate: Date | string, values: Value[], max?: number) {
+	constructor(endDate: Date | string, values: Value[], max?: number, colorRange: string[] = Heatmap.DEFAULT_RANGE_COLOR_LIGHT) {
 		this.endDate   = this.parseDate(endDate);
 		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / 5) * 4);
+        console.log(`max: ${this.max}`)
+        this.colorRange = colorRange;
+        console.log(this.colorRange);
 		this.startDate = this.shiftDate(endDate, -Heatmap.DAYS_IN_ONE_YEAR);
 		this._values   = values;
 	}
 
 	set values(v: Value[]) {
 		this.max                    = Math.ceil((Math.max(...v.map(day => day.count)) / 5) * 4);
+        console.log(`max: ${this.max}`)
 		this._values                = v;
 		this._firstFullWeekOfMonths = undefined;
 		this._calendar              = undefined;
@@ -142,9 +147,12 @@ export class Heatmap {
 		} else if (count <= 0) {
 			return 1;
 		} else if (count >= this.max) {
-			return 5;
+			return this.colorRange.length - 1;
 		} else {
-			return (Math.ceil(((count * 100) / this.max) * (0.03))) + 1;
+			//return (Math.ceil(((count * 100) / this.max) * (0.03))) + 1;
+            const percentage = (count * 100) / this.max;
+            const colorIndex = Math.floor((percentage / 100) * (this.colorRange.length - 2)) + 1;
+            return colorIndex;
 		}
 	}
 

@@ -174,7 +174,7 @@
 
 				  svg                         = ref<null | SVGElement>(null),
 				  now                         = ref(new Date()),
-				  heatmap                     = ref(new Heatmap(props.endDate as Date, props.values, props.max)),
+				  heatmap                     = ref(new Heatmap(props.endDate as Date, props.values, props.max, props.rangeColor)),
 
 				  width                       = ref(0),
 				  height                      = ref(0),
@@ -273,7 +273,7 @@
 			watch(
 				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor ],
 				() => {
-					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max);
+					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max, rangeColor.value);
 					tippyInstances.forEach((item) => item.destroy());
 					nextTick(initTippy);
 				}
