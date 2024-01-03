@@ -190,7 +190,7 @@
 				  lo                          = ref<Locale>({} as any),
 				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT));
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, allowFutureDays, vertical, locale } = toRefs(props),
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
 
 			let tippySingleton: CreateSingletonInstance;
@@ -325,7 +325,7 @@
 			return {
 				SQUARE_BORDER_SIZE, SQUARE_SIZE, LEFT_SECTION_WIDTH, RIGHT_SECTION_WIDTH, TOP_SECTION_HEIGHT, BOTTOM_SECTION_HEIGHT,
 				svg, heatmap, now, width, height, viewbox, daysLabelWrapperTransform, monthsLabelWrapperTransform, yearWrapperTransform, legendWrapperTransform,
-				lo, legendViewbox, curRangeColor: rangeColor, allowFutureDays,
+				lo, legendViewbox, curRangeColor: rangeColor,
 				getWeekPosition, getDayPosition, getMonthLabelPosition, initTippyLazy
 			};
 		}

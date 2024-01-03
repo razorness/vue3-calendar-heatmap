@@ -100,7 +100,7 @@ export default {
   Boolean for enable/disable rendering of days that come after the present time (i.e. new Date()). false by default.
 
 ```html:no-line-numbers
-<calendar-heatmap :allowFutureDays="true" .../>
+<calendar-heatmap allowFutureDays .../>
 ```
 
 ### round
