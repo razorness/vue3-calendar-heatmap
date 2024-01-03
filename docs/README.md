@@ -92,6 +92,17 @@ export default {
 <calendar-heatmap :end-date="2018-9-22" .../>
 ```
 
+### allowFutureDays
+
+- Type: `boolean`
+- Details:
+
+  Boolean for enable/disable rendering of days that come after the present time (i.e. new Date()). false by default.
+
+```html:no-line-numbers
+<calendar-heatmap :allowFutureDays="true" .../>
+```
+
 ### round
 
 - Type: `number` between `0` and `5`
