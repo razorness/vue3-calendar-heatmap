@@ -63,7 +63,7 @@
 				>
 					<template v-for="(day, dayIndex) in week" :key="dayIndex">
 						<rect class="vch__day__square"
-							  v-if="day.date < now"
+							  v-if="allowFutureDays || day.date < now"
 							  :rx="round"
 							  :ry="round"
 							  :transform="getDayPosition(dayIndex)"
@@ -122,6 +122,10 @@
 		props: {
 			endDate         : {
 				required: true
+			},
+			allowFutureDays : {
+				type    : Boolean,
+				default : false
 			},
 			max             : {
 				type: Number
@@ -186,7 +190,7 @@
 				  lo                          = ref<Locale>({} as any),
 				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT));
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale } = toRefs(props),
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, allowFutureDays, vertical, locale } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
 
 			let tippySingleton: CreateSingletonInstance;
@@ -321,7 +325,7 @@
 			return {
 				SQUARE_BORDER_SIZE, SQUARE_SIZE, LEFT_SECTION_WIDTH, RIGHT_SECTION_WIDTH, TOP_SECTION_HEIGHT, BOTTOM_SECTION_HEIGHT,
 				svg, heatmap, now, width, height, viewbox, daysLabelWrapperTransform, monthsLabelWrapperTransform, yearWrapperTransform, legendWrapperTransform,
-				lo, legendViewbox, curRangeColor: rangeColor,
+				lo, legendViewbox, curRangeColor: rangeColor, allowFutureDays,
 				getWeekPosition, getDayPosition, getMonthLabelPosition, initTippyLazy
 			};
 		}
