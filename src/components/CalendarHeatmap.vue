@@ -12,36 +12,15 @@
 					{{ lo.months[ month.value ] }}
 				</text>
 			</g>
-            <!-- 
-			<g class="vch__days__labels__wrapper" :transform="daysLabelWrapperTransform">
-				<text class="vch__day__label"
-					  :x="vertical ? SQUARE_SIZE : 0"
-					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 20"
-				>
-					{{ lo.days[ 1 - startDay ] }}
-				</text>
-				<text class="vch__day__label"
-					  :x="vertical ? SQUARE_SIZE * 3 : 0"
-					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 44"
-				>
-					{{ lo.days[ 3 - startDay ] }}
-				</text>
-				<text class="vch__day__label"
-					  :x="vertical ? SQUARE_SIZE * 5 : 0"
-					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 69"
-				>
-					{{ lo.days[ 5 - startDay ] }}
-				</text>
-			</g>
-             -->
+            
             <g class="vch__days__labels__wrapper" :transform="daysLabelWrapperTransform">
             <template v-for="i in [0, 1, 2, 3, 4, 5, 6]">
 				<text class="vch__day__label" :key="i"
-                      v-if="(i+startWeekday) % 2 == 1"
+                      v-if="(i + startWeekday) % 2 == 1"
 					  :x="vertical ? SQUARE_SIZE * i : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : (8 + 12 * i)"
 				>
-					{{ lo.days[ (i + startWeekday)%7 ] }}
+					{{ lo.days[ (i + startWeekday) % DAYS_IN_WEEK ] }}
 				</text>
             </template>
             </g>
@@ -137,7 +116,7 @@
 			},
             startWeekday: {
                 type: Number,
-                default: 1, // 0 for Sunday, 1 for Monday, etc.
+                default: 0, // 0 for Sunday, 1 for Monday, etc.
             },
 			max             : {
 				type: Number
@@ -187,6 +166,7 @@
 				  TOP_SECTION_HEIGHT          = Heatmap.SQUARE_SIZE + (Heatmap.SQUARE_SIZE / 2),
 				  BOTTOM_SECTION_HEIGHT       = Heatmap.SQUARE_SIZE + (Heatmap.SQUARE_SIZE / 2),
 				  yearWrapperTransform        = `translate(${LEFT_SECTION_WIDTH}, ${TOP_SECTION_HEIGHT})`,
+                  DAYS_IN_WEEK                = Heatmap.DAYS_IN_WEEK,
 
 				  svg                         = ref<null | SVGElement>(null),
 				  now                         = ref(new Date()),
@@ -245,18 +225,10 @@
 			}
 
 			function getDayPosition(index: number) {
-                //index = index - props.startDay;
-                ////index = index % Heatmap.DAYS_IN_WEEK;
-                //// fit to interval
-                //if (index < 0) {
-                //    index = index + Heatmap.DAYS_IN_WEEK;
-                //}
                 if (props.vertical) {
                     return `translate(${index * SQUARE_SIZE}, 0)`;
                 }
 				return `translate(0, ${index * SQUARE_SIZE})`;
-                //const startingDayOffset = (index + props.startDay) % Heatmap.DAYS_IN_WEEK;
-                //return `translate(${startingDayOffset * SQUARE_SIZE}, 0)`;
             }
 
 			function getMonthLabelPosition(month: Month) {
@@ -264,8 +236,6 @@
                     return { x: 3, y: (SQUARE_SIZE * heatmap.value.weekCount) - (SQUARE_SIZE * (month.index)) - (SQUARE_SIZE / 4) };
                 }
 				return { x: SQUARE_SIZE * month.index, y: SQUARE_SIZE - SQUARE_BORDER_SIZE };
-                //const startingMonthOffset = month.index + props.startDay;
-                //return { x: SQUARE_SIZE * startingMonthOffset, y: SQUARE_SIZE - SQUARE_BORDER_SIZE };
             }
 
 			watch([ toRef(props, 'rangeColor'), toRef(props, 'darkMode') ], ([ rc, dm ]) => {
@@ -273,7 +243,6 @@
 			});
 
 			watch(vertical, v => {
-			//watch([props.vertical, props.startWeekday], ([v, startWeekday]) => {
 				if (v) {
 					width.value                       = LEFT_SECTION_WIDTH + (SQUARE_SIZE * Heatmap.DAYS_IN_WEEK) + RIGHT_SECTION_WIDTH;
 					height.value                      = TOP_SECTION_HEIGHT + (SQUARE_SIZE * heatmap.value.weekCount) + SQUARE_BORDER_SIZE;
@@ -346,7 +315,7 @@
 			}
 
 			return {
-				SQUARE_BORDER_SIZE, SQUARE_SIZE, LEFT_SECTION_WIDTH, RIGHT_SECTION_WIDTH, TOP_SECTION_HEIGHT, BOTTOM_SECTION_HEIGHT,
+				SQUARE_BORDER_SIZE, SQUARE_SIZE, LEFT_SECTION_WIDTH, RIGHT_SECTION_WIDTH, TOP_SECTION_HEIGHT, BOTTOM_SECTION_HEIGHT, DAYS_IN_WEEK,
 				svg, heatmap, now, width, height, viewbox, daysLabelWrapperTransform, monthsLabelWrapperTransform, yearWrapperTransform, legendWrapperTransform,
 				lo, legendViewbox, curRangeColor: rangeColor,
 				getWeekPosition, getDayPosition, getMonthLabelPosition, initTippyLazy

@@ -69,7 +69,6 @@ export class Heatmap {
 	constructor(endDate: Date | string, values: Value[], max?: number, colorRange: string[] = Heatmap.DEFAULT_RANGE_COLOR_LIGHT, startWeekday: number = 0) {
 		this.endDate   = this.parseDate(endDate);
         this.startWeekday  = startWeekday;
-        console.log('startWeekday.const', startWeekday)
         this.colorRange = colorRange;
         let sections = this.colorRange.length-1;
 		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / sections) * (sections-1));
@@ -109,8 +108,6 @@ export class Heatmap {
 
 	get calendar() {
 		if (!this._calendar) {
-            console.log('startWeekday.calendar', this.startWeekday)
-
 			let date       = this.shiftDate(this.startDate, -this.getCountEmptyDaysAtStart());
 			date           = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 			this._calendar = new Array(this.weekCount);
@@ -168,8 +165,6 @@ export class Heatmap {
 	}
 
     getDayOfWeek(day: Date) {
-        //return (day.getDay() - this.startWeekday) % Heatmap.DAYS_IN_WEEK;
-        // TODO interval 0-6
         return (day.getDay() - this.startWeekday + Heatmap.DAYS_IN_WEEK) % Heatmap.DAYS_IN_WEEK;
     }
 
