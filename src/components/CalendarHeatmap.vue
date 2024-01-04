@@ -12,27 +12,39 @@
 					{{ lo.months[ month.value ] }}
 				</text>
 			</g>
-
+            <!-- 
 			<g class="vch__days__labels__wrapper" :transform="daysLabelWrapperTransform">
 				<text class="vch__day__label"
 					  :x="vertical ? SQUARE_SIZE : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 20"
 				>
-					{{ lo.days[ 1 ] }}
+					{{ lo.days[ 1 - startDay ] }}
 				</text>
 				<text class="vch__day__label"
 					  :x="vertical ? SQUARE_SIZE * 3 : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 44"
 				>
-					{{ lo.days[ 3 ] }}
+					{{ lo.days[ 3 - startDay ] }}
 				</text>
 				<text class="vch__day__label"
 					  :x="vertical ? SQUARE_SIZE * 5 : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 69"
 				>
-					{{ lo.days[ 5 ] }}
+					{{ lo.days[ 5 - startDay ] }}
 				</text>
 			</g>
+             -->
+            <g class="vch__days__labels__wrapper" :transform="daysLabelWrapperTransform">
+            <template v-for="i in [0, 1, 2, 3, 4, 5, 6]">
+				<text class="vch__day__label" :key="i"
+                      v-if="(i+startWeekday) % 2 == 1"
+					  :x="vertical ? SQUARE_SIZE * i : 0"
+					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : (8 + 12 * i)"
+				>
+					{{ lo.days[ (i + startWeekday)%7 ] }}
+				</text>
+            </template>
+            </g>
 
 			<g v-if="vertical" class="vch__legend__wrapper" :transform="legendWrapperTransform">
 				<text :x="SQUARE_SIZE * 1.25" y="8">{{ lo.less }}</text>
@@ -123,6 +135,10 @@
 			endDate         : {
 				required: true
 			},
+            startWeekday: {
+                type: Number,
+                default: 1, // 0 for Sunday, 1 for Monday, etc.
+            },
 			max             : {
 				type: Number
 			},
@@ -174,7 +190,7 @@
 
 				  svg                         = ref<null | SVGElement>(null),
 				  now                         = ref(new Date()),
-				  heatmap                     = ref(new Heatmap(props.endDate as Date, props.values, props.max, props.rangeColor)),
+				  heatmap                     = ref(new Heatmap(props.endDate as Date, props.values, props.max, props.rangeColor, props.startWeekday)),
 
 				  width                       = ref(0),
 				  height                      = ref(0),
@@ -229,24 +245,35 @@
 			}
 
 			function getDayPosition(index: number) {
-				if (props.vertical) {
-					return `translate(${index * SQUARE_SIZE}, 0)`;
-				}
+                //index = index - props.startDay;
+                ////index = index % Heatmap.DAYS_IN_WEEK;
+                //// fit to interval
+                //if (index < 0) {
+                //    index = index + Heatmap.DAYS_IN_WEEK;
+                //}
+                if (props.vertical) {
+                    return `translate(${index * SQUARE_SIZE}, 0)`;
+                }
 				return `translate(0, ${index * SQUARE_SIZE})`;
-			}
+                //const startingDayOffset = (index + props.startDay) % Heatmap.DAYS_IN_WEEK;
+                //return `translate(${startingDayOffset * SQUARE_SIZE}, 0)`;
+            }
 
 			function getMonthLabelPosition(month: Month) {
-				if (props.vertical) {
-					return { x: 3, y: (SQUARE_SIZE * heatmap.value.weekCount) - (SQUARE_SIZE * (month.index)) - (SQUARE_SIZE / 4) };
-				}
+                if (props.vertical) {
+                    return { x: 3, y: (SQUARE_SIZE * heatmap.value.weekCount) - (SQUARE_SIZE * (month.index)) - (SQUARE_SIZE / 4) };
+                }
 				return { x: SQUARE_SIZE * month.index, y: SQUARE_SIZE - SQUARE_BORDER_SIZE };
-			}
+                //const startingMonthOffset = month.index + props.startDay;
+                //return { x: SQUARE_SIZE * startingMonthOffset, y: SQUARE_SIZE - SQUARE_BORDER_SIZE };
+            }
 
 			watch([ toRef(props, 'rangeColor'), toRef(props, 'darkMode') ], ([ rc, dm ]) => {
 				rangeColor.value = rc || (dm ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT);
 			});
 
 			watch(vertical, v => {
+			//watch([props.vertical, props.startWeekday], ([v, startWeekday]) => {
 				if (v) {
 					width.value                       = LEFT_SECTION_WIDTH + (SQUARE_SIZE * Heatmap.DAYS_IN_WEEK) + RIGHT_SECTION_WIDTH;
 					height.value                      = TOP_SECTION_HEIGHT + (SQUARE_SIZE * heatmap.value.weekCount) + SQUARE_BORDER_SIZE;
@@ -271,9 +298,9 @@
 			watch(rangeColor, rc => (legendViewbox.value = `0 0 ${Heatmap.SQUARE_SIZE * (rc.length + 1)} ${Heatmap.SQUARE_SIZE}`), { immediate: true });
 
 			watch(
-				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor ],
+				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor, props.startWeekday ],
 				() => {
-					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max, rangeColor.value);
+					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max, rangeColor.value, props.startWeekday);
 					tippyInstances.forEach((item) => item.destroy());
 					nextTick(initTippy);
 				}

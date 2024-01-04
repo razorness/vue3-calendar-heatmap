@@ -57,6 +57,7 @@ export class Heatmap {
 
 	startDate: Date;
 	endDate: Date;
+    startWeekday: number;
 	max: number;
     colorRange: string[];
 
@@ -65,8 +66,10 @@ export class Heatmap {
 	private _activities?: Activities;
 	private _calendar?: Calendar;
 
-	constructor(endDate: Date | string, values: Value[], max?: number, colorRange: string[] = Heatmap.DEFAULT_RANGE_COLOR_LIGHT) {
+	constructor(endDate: Date | string, values: Value[], max?: number, colorRange: string[] = Heatmap.DEFAULT_RANGE_COLOR_LIGHT, startWeekday: number = 0) {
 		this.endDate   = this.parseDate(endDate);
+        this.startWeekday  = startWeekday;
+        console.log('startWeekday.const', startWeekday)
         this.colorRange = colorRange;
         let sections = this.colorRange.length-1;
 		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / sections) * (sections-1));
@@ -106,13 +109,15 @@ export class Heatmap {
 
 	get calendar() {
 		if (!this._calendar) {
+            console.log('startWeekday.calendar', this.startWeekday)
+
 			let date       = this.shiftDate(this.startDate, -this.getCountEmptyDaysAtStart());
 			date           = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 			this._calendar = new Array(this.weekCount);
 			for (let i = 0, len = this._calendar.length; i < len; i++) {
 				this._calendar[ i ] = new Array(Heatmap.DAYS_IN_WEEK);
 				for (let j = 0; j < Heatmap.DAYS_IN_WEEK; j++) {
-					const dayValues          = this.activities.get(this.keyDayParser(date));
+					const dayValues           = this.activities.get(this.keyDayParser(date));
 					this._calendar![ i ][ j ] = {
 						date      : new Date(date.valueOf()),
 						count     : dayValues ? dayValues.count : undefined,
@@ -155,12 +160,18 @@ export class Heatmap {
 	}
 
 	getCountEmptyDaysAtStart() {
-		return this.startDate.getDay();
+		return this.getDayOfWeek(this.startDate);
 	}
 
 	getCountEmptyDaysAtEnd() {
-		return (Heatmap.DAYS_IN_WEEK - 1) - this.endDate.getDay();
+		return (Heatmap.DAYS_IN_WEEK - 1) - this.getDayOfWeek(this.endDate) ;
 	}
+
+    getDayOfWeek(day: Date) {
+        //return (day.getDay() - this.startWeekday) % Heatmap.DAYS_IN_WEEK;
+        // TODO interval 0-6
+        return (day.getDay() - this.startWeekday + Heatmap.DAYS_IN_WEEK) % Heatmap.DAYS_IN_WEEK;
+    }
 
 	getDaysCount() {
 		return Heatmap.DAYS_IN_ONE_YEAR + 1 + this.getCountEmptyDaysAtStart() + this.getCountEmptyDaysAtEnd();
