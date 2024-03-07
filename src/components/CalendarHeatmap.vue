@@ -186,7 +186,7 @@
 				  lo                          = ref<Locale>({} as any),
 				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT));
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale } = toRefs(props),
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, endDate } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
 
 			let tippySingleton: CreateSingletonInstance;
@@ -271,7 +271,7 @@
 			watch(rangeColor, rc => (legendViewbox.value = `0 0 ${Heatmap.SQUARE_SIZE * (rc.length + 1)} ${Heatmap.SQUARE_SIZE}`), { immediate: true });
 
 			watch(
-				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor ],
+				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor, endDate ],
 				() => {
 					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max);
 					tippyInstances.forEach((item) => item.destroy());
