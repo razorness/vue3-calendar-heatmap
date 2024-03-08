@@ -92,6 +92,19 @@ export default {
 <calendar-heatmap :end-date="2018-9-22" .../>
 ```
 
+### startWeekday
+
+- Type: `number`
+- Required: false
+- Default: `0`
+- Details:
+
+  To specify the first day of the week. `0` for Sunday, `1` for Monday, etc.
+
+```html:no-line-numbers
+<calendar-heatmap :start-weekday="1" .../>
+```
+
 ### round
 
 - Type: `number` between `0` and `5`
