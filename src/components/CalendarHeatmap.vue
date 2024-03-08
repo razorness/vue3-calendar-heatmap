@@ -18,7 +18,7 @@
 				<text class="vch__day__label" :key="i"
                       v-if="(i + startWeekday) % 2 == 1"
 					  :x="vertical ? SQUARE_SIZE * i : 0"
-					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : (8 + 12 * i)"
+					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : ((SQUARE_SIZE - SQUARE_BORDER_SIZE) + SQUARE_SIZE * i)"
 				>
 					{{ lo.days[ (i + startWeekday) % DAYS_IN_WEEK ] }}
 				</text>
