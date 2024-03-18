@@ -264,7 +264,7 @@
 			}, { immediate: true });
 
 			watch(locale, l => (lo.value = l ? { ...Heatmap.DEFAULT_LOCALE, ...l } : Heatmap.DEFAULT_LOCALE), { immediate: true });
-			watch(rangeColor, rc => (legendViewbox.value = `0 0 ${Heatmap.SQUARE_SIZE * (rc.length + 1)} ${Heatmap.SQUARE_SIZE}`), { immediate: true });
+			watch(rangeColor, rc => (legendViewbox.value = `0 0 ${(Heatmap.SQUARE_SIZE + 2) * (rc.length) - 2} ${Heatmap.SQUARE_SIZE}`), { immediate: true });
 
 			watch(
 				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor, props.startWeekday ],
