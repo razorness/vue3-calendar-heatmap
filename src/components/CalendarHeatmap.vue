@@ -341,20 +341,21 @@
             }
 
             let tippySingleton: CreateSingletonInstance;
-            tippySingleton = {} as any;
+            //tippySingleton = {} as any;
 
 
 			function initTippy() {
 				tippyInstances.clear();
-				//if (tippySingleton) {
-				//	tippySingleton.setInstances(Array.from(tippyInstances.values()));
-				//} else {
-				//	tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
-				//		overrides     : [],
-				//		moveTransition: 'transform 0.1s ease-out',
-				//		allowHTML     : true
-				//	});
-				//}
+				if (tippySingleton) {
+					tippySingleton.setInstances(Array.from(tippyInstances.values()));
+				} else {
+                    console.log("create singleton");
+					tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
+						overrides     : [],
+						moveTransition: 'transform 0.1s ease-out',
+						allowHTML     : true
+					});
+				}
 			}
 
             // show tippy on html event with given content
@@ -402,14 +403,6 @@
 						const tooltip = tooltipOptions(heatmap.value.calendar[ weekIndex ][ dayIndex ]);
 						if (tooltip) {
                             showTippy(e.target as HTMLElement, tooltip);
-							//const instance = tippyInstances.get(e.target as HTMLElement);
-                            //
-							//if (instance) {
-							//	instance.setContent(tooltip);
-							//} else if (!instance) {
-							//	tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content: tooltip } as any));
-							//	tippySingleton.setInstances(Array.from(tippyInstances.values()));
-							//}
 						}
 					}
 				}
@@ -433,14 +426,6 @@
                     //    content = props.tooltipFormatter({ count: rangeValue, date: new Date(), colorIndex: index }, props.tooltipUnit!);
                     //} else {
                         content = `<b>${rangeValueLower} to ${rangeValueUpper} ${props.tooltipUnit}</b>`;
-                    //}
-
-                    //const instance = tippyInstances.get(e.target as HTMLElement);
-                    //if (instance) {
-                    //    instance.setContent(content);
-                    //} else if (!instance) {
-                    //    tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content } as any));
-                    //    //tippySingleton.setInstances(Array.from(tippyInstances.values()));
                     //}
 
                     showTippy(e.target as HTMLElement, content);
