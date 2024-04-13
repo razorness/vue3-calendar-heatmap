@@ -46,7 +46,7 @@
 				</text>
 			</g>
 
-			<g class="vch__year__wrapper" :transform="yearWrapperTransform" @mouseover="initTippyLazy">
+			<g class="vch__year__wrapper" :transform="yearWrapperTransform" @mouseover="onHoverDay" @mouseleave="onMouseLeave">
 				<g class="vch__month__wrapper"
 				   v-for="(week, weekIndex) in heatmap.calendar"
 				   :key="weekIndex"
@@ -161,7 +161,7 @@
                 default: null,
             },
 		},
-		emits: [ 'dayClick' ],
+		emits: [ 'dayClick', 'dayHover' ],
 		setup(props) {
 
 			const SQUARE_BORDER_SIZE          = Heatmap.SQUARE_SIZE / 5,
@@ -185,10 +185,12 @@
 				  monthsLabelWrapperTransform = ref(''),
 				  legendWrapperTransform      = ref(''),
 				  lo                          = ref<Locale>({} as any),
-				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT)
-                );
+				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT))//,
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale } = toRefs(props),
+                  //highlightedDay              = ref<Date | null>(props.highlightedDay)
+                  ;
+
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, highlightedDay } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
 
 			let tippySingleton: CreateSingletonInstance;
@@ -281,11 +283,62 @@
 				}
 			);
 
+            // watch for highlighted day and show border
+            let lastHighlightedDay: Date | null = null;
+            watch([highlightedDay], (v) => {
+                const day = v[0];
+
+                // remove border from last highlighted day
+                if (lastHighlightedDay) {
+                    const weekIndex = heatmap.value.calendar.findIndex((week) => week.some((d) => d.date.getTime() === lastHighlightedDay!.getTime()));
+                    if (weekIndex !== -1) {
+                        const dayIndex = heatmap.value.calendar[ weekIndex ].findIndex((d) => d.date.getTime() === lastHighlightedDay!.getTime());
+                        if (dayIndex !== -1) {
+                            const square = svg.value?.querySelector(`.vch__day__square[data-week-index="${weekIndex}"][data-day-index="${dayIndex}"]`);
+                            if (square) {
+                                // remove border class
+                                square.classList.remove('hover');
+                            }
+                        }
+                    }
+                }
+                lastHighlightedDay = day;
+
+                if (day && day != null) {
+
+                    const weekIndex = heatmap.value.calendar.findIndex((week) => week.some((d) => d.date.getTime() === day.getTime()));
+                    if (weekIndex !== -1) {
+                        const dayIndex = heatmap.value.calendar[ weekIndex ].findIndex((d) => d.date.getTime() === day.getTime());
+                        if (dayIndex !== -1) {
+                            const square = svg.value?.querySelector(`.vch__day__square[data-week-index="${weekIndex}"][data-day-index="${dayIndex}"]`);
+                            if (square) {
+                                // add border class
+                                square.classList.add('hover');
+                                //console.log(square);
+                            }
+                        }
+                    }
+                }
+            });
+
 			onMounted(initTippy);
 			onBeforeUnmount(() => {
 				tippySingleton?.destroy();
 				tippyInstances.forEach((item) => item.destroy());
 			});
+
+            // get day from event and return it as Date
+            function getDayFromEvent(e: MouseEvent): Date | null {
+                if (e.target && (e.target as HTMLElement).classList.contains('vch__day__square')) {
+                    const weekIndex = Number((e.target as HTMLElement).dataset.weekIndex),
+                          dayIndex  = Number((e.target as HTMLElement).dataset.dayIndex);
+
+                    if (!isNaN(weekIndex) && !isNaN(dayIndex)) {
+                        return heatmap.value.calendar[ weekIndex ][ dayIndex ].date;
+                    }
+                }
+                return null;
+            }
 
 			function initTippyLazy(e: MouseEvent) {
 
@@ -351,9 +404,22 @@
 				SQUARE_BORDER_SIZE, SQUARE_SIZE, LEFT_SECTION_WIDTH, RIGHT_SECTION_WIDTH, TOP_SECTION_HEIGHT, BOTTOM_SECTION_HEIGHT, DAYS_IN_WEEK,
 				svg, heatmap, now, width, height, viewbox, daysLabelWrapperTransform, monthsLabelWrapperTransform, yearWrapperTransform, legendWrapperTransform,
 				lo, legendViewbox, curRangeColor: rangeColor,
-				getWeekPosition, getDayPosition, getMonthLabelPosition, initTippyLazy
+				getWeekPosition, getDayPosition, getMonthLabelPosition, initTippyLazy, getDayFromEvent
 			};
-		}
+		},
+        methods: {
+            onHoverDay(e: MouseEvent) {
+                this.initTippyLazy(e);
+
+                const day = this.getDayFromEvent(e);
+                if (day) {
+                    this.$emit('dayHover', day);
+                }
+            },
+            onMouseLeave() {
+                this.$emit('dayHover', null);
+            }
+        }
 	});
 </script>
 
@@ -391,7 +457,8 @@
 			fill: #767676;
 		}
 
-		rect.vch__day__square:hover {
+		rect.vch__day__square:hover,
+        rect.vch__day__square.hover {
 			stroke: #555;
 			stroke-width: 2px;
 			paint-order: stroke;
