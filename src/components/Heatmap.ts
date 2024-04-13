@@ -70,14 +70,19 @@ export class Heatmap {
 		this.endDate   = this.parseDate(endDate);
         this.startWeekday  = startWeekday;
         this.colorRange = colorRange;
-        let sections = this.colorRange.length-1;
-		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / sections) * (sections-1));
+        let sections = this.colorRange.length;
+        let maxVal = Math.max(...values.map(day => day.count));
+		//this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / sections) * (sections-1));
+        //let intermediate =(maxVal / sections) * (sections-1);
+        let intermediate =(maxVal / sections) * (sections);
+        this.max       = max ||  Math.ceil(intermediate);
+        console.log("max: " + this.max + " maxVal: " + maxVal + " sections: " + sections + " intermediate: " + intermediate);
 		this.startDate = this.shiftDate(endDate, -Heatmap.DAYS_IN_ONE_YEAR);
 		this._values   = values;
 	}
 
 	set values(v: Value[]) {
-        let sections = this.colorRange.length-1;
+        let sections = this.colorRange.length;
 		this.max                    = Math.ceil((Math.max(...v.map(day => day.count)) / sections) * (sections-1));
 		this._values                = v;
 		this._firstFullWeekOfMonths = undefined;

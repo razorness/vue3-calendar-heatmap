@@ -79,8 +79,8 @@
 						<div class="vch__legend">
 							<div>{{ lo.less }}</div>
 							<svg v-if="!vertical" class="vch__external-legend-wrapper" :viewBox="legendViewbox" :height="SQUARE_SIZE - SQUARE_BORDER_SIZE">
-								<g class="vch__legend__wrapper">
-									<rect
+								<g class="vch__legend__wrapper"  @mouseover="initTippyLazy">
+									<rect class="vch__legend__square"
 										v-for="(color, index) in curRangeColor"
 										:key="index"
 										:rx="round"
@@ -89,6 +89,7 @@
 										:width="SQUARE_SIZE - SQUARE_BORDER_SIZE"
 										:height="SQUARE_SIZE - SQUARE_BORDER_SIZE"
 										:x="SQUARE_SIZE * index"
+                                        :colorIndex="index"
 									/>
 								</g>
 							</svg>
@@ -154,7 +155,11 @@
 				type   : Number,
 				default: 0
 			},
-			darkMode        : Boolean
+			darkMode        : Boolean,
+            highlightedDay  : {
+                type: Date,
+                default: null,
+            },
 		},
 		emits: [ 'dayClick' ],
 		setup(props) {
@@ -180,7 +185,8 @@
 				  monthsLabelWrapperTransform = ref(''),
 				  legendWrapperTransform      = ref(''),
 				  lo                          = ref<Locale>({} as any),
-				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT));
+				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT)
+                );
 
 			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
@@ -297,7 +303,6 @@
 
 						const tooltip = tooltipOptions(heatmap.value.calendar[ weekIndex ][ dayIndex ]);
 						if (tooltip) {
-
 							const instance = tippyInstances.get(e.target as HTMLElement);
 
 							if (instance) {
@@ -309,9 +314,58 @@
 
 						}
 					}
-
 				}
+                // else branch for legend
+                else if(tippySingleton
+                    && e.target
+                    && (e.target as HTMLElement).classList.contains('vch__legend__square')
+                ) {
+                    const instance = tippyInstances.get(e.target as HTMLElement);
+                    //console.log(instance);
 
+
+                    // reverse this: const colorIndex = Math.floor(percentage * (this.colorRange.length - 2)) + 1;
+                    let val = (heatmap.value.max / rangeColor.value.length) * 2;
+                    
+                    // get element index in parent
+                    let attr = (e.target as HTMLElement).getAttribute('colorIndex');
+                    if(attr === null) {
+                        return;
+                    }
+                    const index = parseInt(attr);
+                    // get range value from heatmap via max and color ranges
+                    const rangeValueLower = Math.round((heatmap.value.max / rangeColor.value.length) * index);
+                    //const rangeValueLower = (heatmap.value.max / rangeColor.value.length) * index;
+                    const rangeValueUpper = Math.round((heatmap.value.max / rangeColor.value.length ) * (index+ 1));
+                    //const rangeValueUpper = (heatmap.value.max / rangeColor.value.length ) * (index + 1);
+                    //const content = 'This is the legend ' + rangeValue;
+                    //const content = `${rangeValue}`;
+
+                     console.log({
+                        max: heatmap.value.max,
+                        //rangeColor: rangeColor.value,
+                        index,
+                        rangeValueLower,
+                        rangeValueUpper,
+                        val
+                    });
+
+                    // use tooltipFormatter if available
+                    let content = '';
+                    //if (props.tooltipFormatter) {
+                    //    content = props.tooltipFormatter({ count: rangeValue, date: new Date(), colorIndex: index }, props.tooltipUnit!);
+                    //} else {
+                        content = `<b>${rangeValueLower} to ${rangeValueUpper} ${props.tooltipUnit}</b>`;
+                    //}
+
+                    if (instance) {
+                        instance.setContent(content);
+                    } else if (!instance) {
+                        tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content } as any));
+                        tippySingleton.setInstances(Array.from(tippyInstances.values()));
+                    }
+                }
+                console.log(e.target);
 			}
 
 			return {
