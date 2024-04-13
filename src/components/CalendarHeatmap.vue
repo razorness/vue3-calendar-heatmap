@@ -160,6 +160,10 @@
                 type: Date,
                 default: null,
             },
+            showTooltipOnExternalHighlight: {
+                type: Boolean,
+                default: false,
+            }
 		},
 		emits: [ 'dayClick', 'dayHover' ],
 		setup(props) {
@@ -190,24 +194,10 @@
                   //highlightedDay              = ref<Date | null>(props.highlightedDay)
                   ;
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, highlightedDay } = toRefs(props),
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, highlightedDay, showTooltipOnExternalHighlight } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
 
-			let tippySingleton: CreateSingletonInstance;
-
-
-			function initTippy() {
-				tippyInstances.clear();
-				if (tippySingleton) {
-					tippySingleton.setInstances(Array.from(tippyInstances.values()));
-				} else {
-					tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
-						overrides     : [],
-						moveTransition: 'transform 0.1s ease-out',
-						allowHTML     : true
-					});
-				}
-			}
+			
 
 			function tooltipOptions(day: CalendarItem) {
 				if (props.tooltip) {
@@ -296,8 +286,11 @@
                         if (dayIndex !== -1) {
                             const square = svg.value?.querySelector(`.vch__day__square[data-week-index="${weekIndex}"][data-day-index="${dayIndex}"]`);
                             if (square) {
-                                // remove border class
                                 square.classList.remove('hover');
+                                if(showTooltipOnExternalHighlight)
+                                {
+                                    hideTippy(square as HTMLElement);
+                                }
                             }
                         }
                     }
@@ -305,19 +298,26 @@
                 lastHighlightedDay = day;
 
                 if (day && day != null) {
-
                     const weekIndex = heatmap.value.calendar.findIndex((week) => week.some((d) => d.date.getTime() === day.getTime()));
                     if (weekIndex !== -1) {
                         const dayIndex = heatmap.value.calendar[ weekIndex ].findIndex((d) => d.date.getTime() === day.getTime());
                         if (dayIndex !== -1) {
                             const square = svg.value?.querySelector(`.vch__day__square[data-week-index="${weekIndex}"][data-day-index="${dayIndex}"]`);
                             if (square) {
-                                // add border class
                                 square.classList.add('hover');
-                                //console.log(square);
+                                if(showTooltipOnExternalHighlight)
+                                {
+                                    const tooltip = tooltipOptions(heatmap.value.calendar[ weekIndex ][ dayIndex ]);
+                                    //console.log(tooltip);
+                                    if (tooltip) {
+                                        // get proper element for dataset
+                                        nextTick(() => showTippy(square as HTMLElement, tooltip));
+                                    }
+                                }
                             }
                         }
                     }
+
                 }
             });
 
@@ -340,6 +340,51 @@
                 return null;
             }
 
+            let tippySingleton: CreateSingletonInstance;
+            tippySingleton = {} as any;
+
+
+			function initTippy() {
+				tippyInstances.clear();
+				//if (tippySingleton) {
+				//	tippySingleton.setInstances(Array.from(tippyInstances.values()));
+				//} else {
+				//	tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
+				//		overrides     : [],
+				//		moveTransition: 'transform 0.1s ease-out',
+				//		allowHTML     : true
+				//	});
+				//}
+			}
+
+            // show tippy on html event with given content
+            function showTippy(element : HTMLElement, content: string) {
+                if (!tippySingleton) {
+                    console.log("no singleton");
+                    return;
+                }
+
+                //console.log(element);
+                const instance = tippyInstances.get(element);
+                if (instance) {
+                    instance.setContent(content);
+                    instance.show();
+                } else if (!instance) {
+                    let t = tippy(element, { content, allowHTML : true } as any);
+                    tippyInstances.set(element, t);
+                    t.show();
+                    //tippySingleton.setInstances(Array.from(tippyInstances.values()));
+                }
+            }
+
+            // hide tippy on html event
+            function hideTippy(element: HTMLElement) {
+                const instance = tippyInstances.get(element);
+                if (instance) {
+                    instance.hide();
+                }
+            }
+
 			function initTippyLazy(e: MouseEvent) {
 
 				if (tippySingleton
@@ -356,15 +401,15 @@
 
 						const tooltip = tooltipOptions(heatmap.value.calendar[ weekIndex ][ dayIndex ]);
 						if (tooltip) {
-							const instance = tippyInstances.get(e.target as HTMLElement);
-
-							if (instance) {
-								instance.setContent(tooltip);
-							} else if (!instance) {
-								tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content: tooltip } as any));
-								tippySingleton.setInstances(Array.from(tippyInstances.values()));
-							}
-
+                            showTippy(e.target as HTMLElement, tooltip);
+							//const instance = tippyInstances.get(e.target as HTMLElement);
+                            //
+							//if (instance) {
+							//	instance.setContent(tooltip);
+							//} else if (!instance) {
+							//	tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content: tooltip } as any));
+							//	tippySingleton.setInstances(Array.from(tippyInstances.values()));
+							//}
 						}
 					}
 				}
@@ -390,13 +435,15 @@
                         content = `<b>${rangeValueLower} to ${rangeValueUpper} ${props.tooltipUnit}</b>`;
                     //}
 
-                    const instance = tippyInstances.get(e.target as HTMLElement);
-                    if (instance) {
-                        instance.setContent(content);
-                    } else if (!instance) {
-                        tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content } as any));
-                        tippySingleton.setInstances(Array.from(tippyInstances.values()));
-                    }
+                    //const instance = tippyInstances.get(e.target as HTMLElement);
+                    //if (instance) {
+                    //    instance.setContent(content);
+                    //} else if (!instance) {
+                    //    tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content } as any));
+                    //    //tippySingleton.setInstances(Array.from(tippyInstances.values()));
+                    //}
+
+                    showTippy(e.target as HTMLElement, content);
                 }
 			}
 
