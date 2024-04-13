@@ -70,13 +70,9 @@ export class Heatmap {
 		this.endDate   = this.parseDate(endDate);
         this.startWeekday  = startWeekday;
         this.colorRange = colorRange;
-        let sections = this.colorRange.length;
-        let maxVal = Math.max(...values.map(day => day.count));
+        let sections = this.colorRange.length; // TODO flag to set values over max into the highest range / or distribute evenly
 		//this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / sections) * (sections-1));
-        //let intermediate =(maxVal / sections) * (sections-1);
-        let intermediate =(maxVal / sections) * (sections);
-        this.max       = max ||  Math.ceil(intermediate);
-        console.log("max: " + this.max + " maxVal: " + maxVal + " sections: " + sections + " intermediate: " + intermediate);
+        this.max       = max ||  Math.ceil(Math.max(...values.map(day => day.count)));
 		this.startDate = this.shiftDate(endDate, -Heatmap.DAYS_IN_ONE_YEAR);
 		this._values   = values;
 	}
@@ -152,7 +148,7 @@ export class Heatmap {
 			return 0;
 		} else if (count <= 0) {
 			return 1;
-		} else if (count >= this.max) {
+		} else if (count >= this.max) { // TODO max range exclusive flag
 			return this.colorRange.length - 1;
 		} else {
             const percentage = ((count * 100) / this.max)  / 100;

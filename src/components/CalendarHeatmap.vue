@@ -315,42 +315,21 @@
 						}
 					}
 				}
-                // else branch for legend
+                // elseif branch for legend
                 else if(tippySingleton
                     && e.target
                     && (e.target as HTMLElement).classList.contains('vch__legend__square')
                 ) {
-                    const instance = tippyInstances.get(e.target as HTMLElement);
-                    //console.log(instance);
-
-
-                    // reverse this: const colorIndex = Math.floor(percentage * (this.colorRange.length - 2)) + 1;
-                    let val = (heatmap.value.max / rangeColor.value.length) * 2;
                     
-                    // get element index in parent
                     let attr = (e.target as HTMLElement).getAttribute('colorIndex');
                     if(attr === null) {
                         return;
                     }
                     const index = parseInt(attr);
-                    // get range value from heatmap via max and color ranges
                     const rangeValueLower = Math.round((heatmap.value.max / rangeColor.value.length) * index);
-                    //const rangeValueLower = (heatmap.value.max / rangeColor.value.length) * index;
                     const rangeValueUpper = Math.round((heatmap.value.max / rangeColor.value.length ) * (index+ 1));
-                    //const rangeValueUpper = (heatmap.value.max / rangeColor.value.length ) * (index + 1);
-                    //const content = 'This is the legend ' + rangeValue;
-                    //const content = `${rangeValue}`;
 
-                     console.log({
-                        max: heatmap.value.max,
-                        //rangeColor: rangeColor.value,
-                        index,
-                        rangeValueLower,
-                        rangeValueUpper,
-                        val
-                    });
-
-                    // use tooltipFormatter if available
+                    // TODO use tooltipFormatter if available
                     let content = '';
                     //if (props.tooltipFormatter) {
                     //    content = props.tooltipFormatter({ count: rangeValue, date: new Date(), colorIndex: index }, props.tooltipUnit!);
@@ -358,6 +337,7 @@
                         content = `<b>${rangeValueLower} to ${rangeValueUpper} ${props.tooltipUnit}</b>`;
                     //}
 
+                    const instance = tippyInstances.get(e.target as HTMLElement);
                     if (instance) {
                         instance.setContent(content);
                     } else if (!instance) {
@@ -365,7 +345,6 @@
                         tippySingleton.setInstances(Array.from(tippyInstances.values()));
                     }
                 }
-                console.log(e.target);
 			}
 
 			return {
