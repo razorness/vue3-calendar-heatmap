@@ -192,7 +192,7 @@
 				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT))
                   ;
 
-			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, highlightedDay, showTooltipOnExternalHighlight } = toRefs(props),
+			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, highlightedDay, showTooltipOnExternalHighlight, startWeekday } = toRefs(props),
 				  tippyInstances                                                               = new Map<HTMLElement, Instance>();
 
 			
@@ -263,7 +263,7 @@
 			watch(rangeColor, rc => (legendViewbox.value = `0 0 ${(Heatmap.SQUARE_SIZE + 2) * (rc.length) - 2} ${Heatmap.SQUARE_SIZE}`), { immediate: true });
 
 			watch(
-				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor, props.startWeekday ],
+				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor, startWeekday ],
 				() => {
 					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max, rangeColor.value, props.startWeekday);
 					tippyInstances.forEach((item) => item.destroy());
