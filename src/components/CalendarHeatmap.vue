@@ -189,9 +189,7 @@
 				  monthsLabelWrapperTransform = ref(''),
 				  legendWrapperTransform      = ref(''),
 				  lo                          = ref<Locale>({} as any),
-				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT))//,
-
-                  //highlightedDay              = ref<Date | null>(props.highlightedDay)
+				  rangeColor                  = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT))
                   ;
 
 			const { values, tooltipUnit, tooltipFormatter, noDataText, max, vertical, locale, highlightedDay, showTooltipOnExternalHighlight } = toRefs(props),
@@ -287,10 +285,6 @@
                             const square = svg.value?.querySelector(`.vch__day__square[data-week-index="${weekIndex}"][data-day-index="${dayIndex}"]`);
                             if (square) {
                                 square.classList.remove('hover');
-                                //if(showTooltipOnExternalHighlight)
-                                //{
-                                //    hideTippy(square as HTMLElement);
-                                //}
                             }
                         }
                     }
@@ -312,9 +306,7 @@
                                 if(showTooltipOnExternalHighlight)
                                 {
                                     const tooltip = tooltipOptions(heatmap.value.calendar[ weekIndex ][ dayIndex ]);
-                                    //console.log(tooltip);
                                     if (tooltip) {
-                                        // get proper element for dataset
                                         nextTick(() => showTippy(square as HTMLElement, tooltip));
                                     }
                                 }
@@ -345,25 +337,17 @@
             }
 
             let tippySingleton: CreateSingletonInstance;
-            //tippySingleton = {} as any;
-
-            // last opened tippy instances
-            let lastOpenedTippyInstance: Instance | null = null;
-
 
 			function initTippy() {
 				tippyInstances.clear();
 				if (tippySingleton) {
 					tippySingleton.setInstances(Array.from(tippyInstances.values()));
 				} else {
-                    console.log("create singleton");
-
 					tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
 						overrides     : [],
 						moveTransition: 'transform 0.1s ease-out',
 						allowHTML     : true
 					});
-                    console.log(tippySingleton);
 				}
 			}
 
@@ -374,39 +358,20 @@
                     return;
                 }
 
-                //console.log(element);
                 let instance = tippyInstances.get(element);
                 if (instance) {
                     instance.setContent(content);
-                    //instance.show();
                 } else if (!instance) {
                     instance = tippy(element, { content, allowHTML : true } as any);
                     tippyInstances.set(element, instance);
-                    //instance.show();
                     tippySingleton.setInstances(Array.from(tippyInstances.values()));
-                    //console.log(tippySingleton);
                 }
 
                 tippySingleton.show(instance);
-                lastOpenedTippyInstance = instance;
             }
-
-            // hide tippy on html event
-            //function hideTippy(element: HTMLElement) {
-            //    const instance = tippyInstances.get(element);
-            //    if (instance) {
-            //        instance.hide();
-            //        //tippySingleton.hide(instance);
-            //    }
-            //    // else hide last
-            //    else {
-            //        //tippySingleton.hide(); // this does nothing
-            //        lastOpenedTippyInstance?.hide();
-            //    }
-            //}
+            
             function hideTippy() {
                 tippySingleton.hide();
-                //lastOpenedTippyInstance?.hide();// this does nothing
             }
 
 			function initTippyLazy(e: MouseEvent) {
