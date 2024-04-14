@@ -157,7 +157,7 @@
 			},
 			darkMode        : Boolean,
             highlightedDay  : {
-                type: Date,
+                type: Date as PropType<Date | null>,
                 default: null,
             },
             showTooltipOnExternalHighlight: {
@@ -369,7 +369,7 @@
 
                 tippySingleton.show(instance);
             }
-            
+
             function hideTippy() {
                 tippySingleton.hide();
             }
