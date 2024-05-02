@@ -147,6 +147,10 @@
 			tooltipFormatter: {
 				type: Function as PropType<TooltipFormatter>
 			},
+			tippyProps: {
+				type   : Object,
+				default: null,
+			},
 			vertical        : {
 				type   : Boolean,
 				default: false
@@ -200,7 +204,8 @@
 					tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
 						overrides     : [],
 						moveTransition: 'transform 0.1s ease-out',
-						allowHTML     : true
+						allowHTML     : true,
+						...props.tippyProps,
 					});
 				}
 			}

@@ -63,6 +63,14 @@
 			:tooltip-unit="picked"
 			:vertical="orientation === 'vertical'"
 		/>
+    <h4>TippyProps</h4>
+    <calendar-heatmap
+      :values="values"
+      :end-date="endDate"
+      :style="{'max-width': orientation === 'vertical' ? '145px' :  '675px'}"
+      :tippy-props="{placement: 'bottom'}"
+      :vertical="orientation === 'vertical'"
+    />
 	</div>
 </template>
 

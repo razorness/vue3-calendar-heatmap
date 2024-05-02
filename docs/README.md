@@ -122,6 +122,16 @@ export default {
 <calendar-heatmap dark-mode .../>
 ```
 
+### tippyProps
+- Type: `Object`
+- Details:
+
+  Props object passed to [tippy.js](https://atomiks.github.io/tippyjs/v6/all-props/).
+
+```html:no-line-numbers
+<calendar-heatmap :tippy-props="{ placement: 'bottom' }"/>
+```
+
 #### Example
 <Demo dark-mode/>
 
