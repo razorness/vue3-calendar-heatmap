@@ -129,7 +129,7 @@ export default {
   Props object passed to [tippy.js](https://atomiks.github.io/tippyjs/v6/all-props/).
 
 ```html:no-line-numbers
-<calendar-heatmap :tippy-props="{ theme: 'tomato' }"/>
+<calendar-heatmap :tippy-props="{ placement: 'bottom' }"/>
 ```
 
 #### Example
