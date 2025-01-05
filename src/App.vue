@@ -38,6 +38,16 @@
 		<h4>Some (circles)</h4>
 		<calendar-heatmap :values="values" :end-date="endDate" :style="{'max-width': orientation === 'vertical' ? '145px' :  '675px'}" :round="5"
 						  :vertical="orientation === 'vertical'"/>
+						  <br>
+		<h4>Some (monday)</h4>
+		<calendar-heatmap
+			:values="values"
+			:end-date="endDate"
+			:style="{'max-width': orientation === 'vertical' ? '145px' :  '675px'}"
+			:vertical="orientation === 'vertical'"
+			:week-start="1"
+			no-data-text="NOTHING"
+		/>
 		<br>
 		<h4>Locale</h4>
 		<calendar-heatmap :values="values" :end-date="endDate" :style="{'max-width': orientation === 'vertical' ? '145px' :  '675px'}" :locale="{

@@ -58,15 +58,17 @@ export class Heatmap {
 	startDate: Date;
 	endDate: Date;
 	max: number;
+	weekStart: number;
 
 	private _values: Value[];
 	private _firstFullWeekOfMonths?: Month[];
 	private _activities?: Activities;
 	private _calendar?: Calendar;
 
-	constructor(endDate: Date | string, values: Value[], max?: number) {
+	constructor(endDate: Date | string, values: Value[], max?: number, weekStart?: number) {
 		this.endDate   = this.parseDate(endDate);
 		this.max       = max || Math.ceil((Math.max(...values.map(day => day.count)) / 5) * 4);
+		this.weekStart = weekStart ?? 0;
 		this.startDate = this.shiftDate(endDate, -Heatmap.DAYS_IN_ONE_YEAR);
 		this._values   = values;
 	}
@@ -102,7 +104,7 @@ export class Heatmap {
 
 	get calendar() {
 		if (!this._calendar) {
-			let date       = this.shiftDate(this.startDate, -this.getCountEmptyDaysAtStart());
+			let date       = this.shiftDate(this.startDate, -this.getCountEmptyDaysAtStart() + this.weekStart);
 			date           = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 			this._calendar = new Array(this.weekCount);
 			for (let i = 0, len = this._calendar.length; i < len; i++) {
