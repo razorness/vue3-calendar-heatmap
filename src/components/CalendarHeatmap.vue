@@ -18,19 +18,19 @@
 					  :x="vertical ? SQUARE_SIZE : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 20"
 				>
-					{{ lo.days[ 1 ] }}
+					{{ lo.days[ 1 + weekStart ] }}
 				</text>
 				<text class="vch__day__label"
 					  :x="vertical ? SQUARE_SIZE * 3 : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 44"
 				>
-					{{ lo.days[ 3 ] }}
+					{{ lo.days[ 3 + weekStart ] }}
 				</text>
 				<text class="vch__day__label"
 					  :x="vertical ? SQUARE_SIZE * 5 : 0"
 					  :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 69"
 				>
-					{{ lo.days[ 5 ] }}
+					{{ lo.days[ 5 + weekStart ] }}
 				</text>
 			</g>
 
@@ -159,6 +159,10 @@
 				type   : Number,
 				default: 0
 			},
+			weekStart       : {
+				type   : Number,
+				default: 0
+			},
 			darkMode        : Boolean
 		},
 		emits: [ 'dayClick' ],
@@ -273,7 +277,7 @@
 			watch(
 				[ values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor ],
 				() => {
-					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max);
+					heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max, props.weekStart);
 					tippyInstances.forEach((item) => item.destroy());
 					nextTick(initTippy);
 				}
